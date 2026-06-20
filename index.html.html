@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trợ Lý Hè Pro - Lộc</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:900px;margin:auto;padding:15px}
+.card{border:1px solid #ccc;border-radius:12px;padding:15px;margin:10px 0}
+h1,h2{text-align:center}
+button{padding:8px 12px;margin:4px}
+.progress{width:100%;height:25px}
+</style>
+</head>
+<body>
+<h1>🏆 TRỢ LÝ HÈ PRO CỦA LỘC 🎮</h1>
+
+<div class="card">
+<h2>📅 Lịch Hè</h2>
+<ul>
+<li>06:30 - 07:30 🏃 Tập thể dục</li>
+<li>07:30 - 12:00 🏠 Sinh hoạt cá nhân / giúp gia đình</li>
+<li>12:00 - 13:30 😴 Nghỉ ngơi</li>
+<li>13:30 - 16:00 🎮 Chơi game</li>
+<li>16:00 - 17:00 🎵 Thư giãn</li>
+<li>17:00 - 18:00 🏃 Tập thể dục</li>
+<li>19:00 - 21:30 🎮 Chơi game</li>
+<li>22:00 😴 Đi ngủ</li>
+</ul>
+</div>
+
+<div class="card">
+<h2>✅ Điểm Danh Hôm Nay</h2>
+<label><input type="checkbox" class="task" value="20"> Tập thể dục</label><br>
+<label><input type="checkbox" class="task" value="20"> Ngủ đúng giờ</label><br>
+<label><input type="checkbox" class="task" value="20"> Thư giãn hợp lý</label><br>
+<label><input type="checkbox" class="task" value="20"> Chơi game đúng giờ</label><br>
+<label><input type="checkbox" class="task" value="20"> Giúp gia đình</label><br><br>
+<button onclick="saveToday()">💾 Lưu ngày hôm nay</button>
+<h3 id="score">Điểm: 0/100</h3>
+<progress id="bar" class="progress" value="0" max="100"></progress>
+</div>
+
+<div class="card">
+<h2>🏅 Thành Tích</h2>
+<p>Tổng điểm hè: <b id="total">0</b></p>
+<p>Huy hiệu: <b id="badge">🌱 Khởi đầu</b></p>
+</div>
+
+<script>
+function calc(){
+ let s=0;
+ document.querySelectorAll('.task').forEach(c=>{if(c.checked)s+=20;});
+ document.getElementById('score').innerText='Điểm: '+s+'/100';
+ document.getElementById('bar').value=s;
+ return s;
+}
+document.querySelectorAll('.task').forEach(x=>x.addEventListener('change',calc));
+
+function saveToday(){
+ let score=calc();
+ let total=Number(localStorage.getItem('loc_total')||0);
+ total += score;
+ localStorage.setItem('loc_total',total);
+ update();
+ alert('Đã lưu '+score+' điểm!');
+}
+
+function update(){
+ let total=Number(localStorage.getItem('loc_total')||0);
+ document.getElementById('total').innerText=total;
+ let badge='🌱 Khởi đầu';
+ if(total>=500) badge='🥉 Đồng';
+ if(total>=1000) badge='🥈 Bạc';
+ if(total>=2000) badge='🥇 Vàng';
+ if(total>=3000) badge='👑 Huyền thoại';
+ document.getElementById('badge').innerText=badge;
+}
+update();
+</script>
+<div class="card"><h2>🔔 Nhắc việc</h2><button onclick="startReminder()">Bật nhắc theo lịch</button><p>Sẽ nhắc các mốc 06:30, 07:30, 12:00, 13:30, 16:00, 17:00, 19:00, 22:00.</p></div>
+<script>
+const reminders={
+"06:30":"🏃 Đến giờ tập thể dục!",
+"07:30":"🏠 Sinh hoạt cá nhân / giúp gia đình!",
+"12:00":"😴 Đến giờ nghỉ ngơi!",
+"13:30":"🎮 Đến giờ chơi game!",
+"16:00":"🎵 Đến giờ thư giãn!",
+"17:00":"🏃 Tập thể dục buổi chiều!",
+"19:00":"🎮 Chơi game buổi tối!",
+"22:00":"😴 Đi ngủ thôi!"
+};
+function startReminder(){
+ if(Notification.permission!=="granted"){
+   Notification.requestPermission();
+ }
+ setInterval(()=>{
+   const d=new Date();
+   const t=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+   if(reminders[t] && Notification.permission==="granted"){
+      new Notification(reminders[t]);
+   }
+ },30000);
+ alert("Đã bật nhắc việc. Hãy giữ tab hoặc cài web vào màn hình chính để hoạt động tốt.");
+}
+</script>
+</body>
+</html>
